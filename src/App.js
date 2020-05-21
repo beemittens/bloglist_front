@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import AddBlog from './components/AddBlog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import ErrorNotification from './components/ErrorNotification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,9 +15,8 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
+
+  const noteFormRef = React.createRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -33,13 +34,14 @@ const App = () => {
   }, [])
 
   const handleLogin = async (event) => {
-    setErrorMessage('')
+    setErrorMessage(null)
     event.preventDefault()
     try {
       const user = await loginService.login({
         username, password
       })
 
+      console.log(user)
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)) 
       blogService.setToken(user.token)
       setUser(user)
@@ -83,12 +85,41 @@ const App = () => {
     </>
   )
 
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
+  const handleAddBlog = async (blog) => {
     try {
-      const newBlog = await blogService.create({ title: newTitle, author: newAuthor, url: newUrl })
+      const newBlog = await blogService.create(blog)
+      noteFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(newBlog))
       setMessage(`Added new blog: ${newBlog.title} by ${newBlog.author}`)
+      return true
+    } catch (error) {
+      console.log(error.response.data.error)
+      setErrorMessage(error.response.data.error)
+      return false
+    }
+  }
+
+  const handleLikeBlog = async (blog) => {
+
+    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      return
+    }
+
+    try {
+      const updatedBlog = await blogService.like(blog)
+      const blogIndex = blogs.findIndex(item => item.id === updatedBlog.id)
+      blogs.splice(blogIndex, 1)
+      setBlogs(blogs.concat(updatedBlog))
+    } catch (error) {
+      console.log(error.response.data.error)
+      setErrorMessage(error.response.data.error)
+    }
+  }
+
+  const handleRemoveBlog = async (blog) => {
+    try {
+      await blogService.remove(blog)
+      setBlogs(await blogService.getAll())
     } catch (error) {
       console.log(error.response.data.error)
       setErrorMessage(error.response.data.error)
@@ -109,14 +140,16 @@ const App = () => {
         <button type="submit">logout</button>
       </form>
       <h2>add a new</h2>
-      <AddBlog addBlog={handleAddBlog}
-        title={newTitle} setTitle={setNewTitle}
-        author={newAuthor} setAuthor={setNewAuthor}
-        url={newUrl} setUrl={setNewUrl}
-      />
+      <Togglable buttonLabel="new blog" ref={noteFormRef}> 
+        <AddBlog addBlog={handleAddBlog} />
+      </Togglable>
       {
-        blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+        blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+          <Blog key={blog.id} blog={blog} 
+            loggedInUser={user}
+            likeBlog={handleLikeBlog}
+            removeBlog={handleRemoveBlog}
+          />
         )
       }
     </div>

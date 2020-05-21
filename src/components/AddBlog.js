@@ -1,40 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 const AddBlog = (props) => {
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
+  const addBlog = async (event) => {
+    event.preventDefault()
+
+    if (await props.addBlog({ title, author, url })) {
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    }
+  }
 
   const handleTitleChange = (event) => {
-    props.setTitle(event.target.value)
+    setTitle(event.target.value)
   }
 
   const handleAuthorChange = (event) => {
-    props.setAuthor(event.target.value)
+    setAuthor(event.target.value)
   }
 
   const handleUrlChange = (event) => {
-    props.setUrl(event.target.value)
+    setUrl(event.target.value)
   }
 
   return (
     <>
-      <form onSubmit={props.addBlog}>
+      <form onSubmit={addBlog}>
         <div>
           Title:
           <input
-            value={props.title}
+            value={title}
             onChange={handleTitleChange}
           />
         </div>
         <div>
           Author:
           <input
-            value={props.author}
+            value={author}
             onChange={handleAuthorChange}
           />
         </div>
         <div>
           Url:
           <input
-            value={props.url}
+            value={url}
             onChange={handleUrlChange}
           />
         </div>
@@ -45,6 +58,5 @@ const AddBlog = (props) => {
     </>
   )
 }
-
 
 export default AddBlog
