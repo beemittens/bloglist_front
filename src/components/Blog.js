@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-
-
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, loggedInUser, likeBlog, removeBlog }) => {
 
@@ -47,16 +46,22 @@ const Blog = ({ blog, loggedInUser, likeBlog, removeBlog }) => {
         <div>
           likes {blog.likes}
           <button onClick={() => likeBlog(blog)}>like</button>
-        </div> 
+        </div>
         <div>{blog.author}</div>
-        <button 
-          style={currentUserAdded(blog)} 
+        <button
+          style={currentUserAdded(blog)}
           onClick={() => removeBlog(blog)}>
             remove
         </button>
       </div>
     </>)
+}
 
+Blog.propTypes = {
+  blog: PropTypes.array.isRequired,
+  loggedInUser: PropTypes.object.isRequired,
+  likeBlog: PropTypes.func.isRequired,
+  removeBlog: PropTypes.func.isRequired
 }
 
 export default Blog

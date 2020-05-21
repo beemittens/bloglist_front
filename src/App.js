@@ -21,7 +21,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -41,8 +41,7 @@ const App = () => {
         username, password
       })
 
-      console.log(user)
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)) 
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -59,29 +58,29 @@ const App = () => {
 
   const loginForm = () => (
     <>
-    <h2>log in to application</h2>
-    <ErrorNotification message={errorMessage} setMessage={setErrorMessage} />
-    <form onSubmit={handleLogin}>
-      <div>
+      <h2>log in to application</h2>
+      <ErrorNotification message={errorMessage} setMessage={setErrorMessage} />
+      <form onSubmit={handleLogin}>
+        <div>
         username
           <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
         password
           <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <button type="submit">login</button>
+      </form>
     </>
   )
 
@@ -101,10 +100,6 @@ const App = () => {
 
   const handleLikeBlog = async (blog) => {
 
-    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      return
-    }
-
     try {
       const updatedBlog = await blogService.like(blog)
       const blogIndex = blogs.findIndex(item => item.id === updatedBlog.id)
@@ -117,6 +112,11 @@ const App = () => {
   }
 
   const handleRemoveBlog = async (blog) => {
+
+    if (!window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      return
+    }
+
     try {
       await blogService.remove(blog)
       setBlogs(await blogService.getAll())
@@ -127,7 +127,7 @@ const App = () => {
   }
 
   if(user === null){
-    return loginForm();
+    return loginForm()
   }
 
   return (
@@ -140,12 +140,12 @@ const App = () => {
         <button type="submit">logout</button>
       </form>
       <h2>add a new</h2>
-      <Togglable buttonLabel="new blog" ref={noteFormRef}> 
+      <Togglable buttonLabel="new blog" ref={noteFormRef}>
         <AddBlog addBlog={handleAddBlog} />
       </Togglable>
       {
         blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-          <Blog key={blog.id} blog={blog} 
+          <Blog key={blog.id} blog={blog}
             loggedInUser={user}
             likeBlog={handleLikeBlog}
             removeBlog={handleRemoveBlog}
