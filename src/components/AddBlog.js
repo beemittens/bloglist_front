@@ -32,21 +32,21 @@ const AddBlog = (props) => {
       <form onSubmit={addBlog}>
         <div>
           Title:
-          <input
+          <input id='titleInput'
             value={title}
             onChange={handleTitleChange}
           />
         </div>
         <div>
           Author:
-          <input
+          <input id='authorInput'
             value={author}
             onChange={handleAuthorChange}
           />
         </div>
         <div>
           Url:
-          <input
+          <input id='urlInput'
             value={url}
             onChange={handleUrlChange}
           />

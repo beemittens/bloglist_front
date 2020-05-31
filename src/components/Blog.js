@@ -28,7 +28,7 @@ const Blog = ({ blog, loggedInUser, likeBlog, removeBlog }) => {
   if (!showDetails) {
     return (
       <>
-        <div style={blogStyle}>
+        <div className='blog' style={blogStyle}>
           {blog.title} {blog.author}
           <button onClick={toggleDetails}>view</button>
         </div>
@@ -37,7 +37,7 @@ const Blog = ({ blog, loggedInUser, likeBlog, removeBlog }) => {
 
   return (
     <>
-      <div style={blogStyle}>
+      <div className='blog' style={blogStyle}>
         <div>
           {blog.title}
           <button onClick={toggleDetails}>hide</button>
@@ -58,7 +58,7 @@ const Blog = ({ blog, loggedInUser, likeBlog, removeBlog }) => {
 }
 
 Blog.propTypes = {
-  blog: PropTypes.array.isRequired,
+  blog: PropTypes.object.isRequired,
   loggedInUser: PropTypes.object.isRequired,
   likeBlog: PropTypes.func.isRequired,
   removeBlog: PropTypes.func.isRequired
